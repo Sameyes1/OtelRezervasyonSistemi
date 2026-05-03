@@ -1,0 +1,55 @@
+import java.time.LocalDate;
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Otel Rezervasyon Sistemi Çalışıyor!");
+        Customer musteri1 = new Customer("11111", "Mustafa Doğan Özdin", "123123123");
+        System.out.println("Yeni Müşteri Eklendi:" + musteri1.getTamAd());
+        Room oda1 = new Room("101", 2, 1500, false);
+        System.out.println("Yeni oda eklendi: Oda " + oda1.getOdaNo());
+        System.out.println("Oda Dolu mu?: " + oda1.DoluMu());
+        System.out.println("Rezervasyon Başarılı Müşteri:" + musteri1.getTamAd() + " Oda No:" + oda1.getOdaNo());
+        Hotel OtelDGN = new Hotel();
+        OtelDGN.MusteriEkle(musteri1);
+        OtelDGN.OdaEkle(oda1);
+
+        Hotel otel = new Hotel();
+
+        // 2. Odamızı oluşturup otele ekliyoruz
+        Room oda101 = new Room("101", 1, 500);
+        otel.OdaEkle(oda101); // Otel sınıfındaki kendi ekleme metodunun adını yaz
+
+        // 3. Müşterileri oluşturup otele kaydediyoruz
+        Customer musteri10 = new Customer("11111111111", "Ahmet Yılmaz", "5551234567");
+        Customer musteri11 = new Customer("22222222222", "MehmetÖztürk", "5559876543");
+        Customer musteri12 = new Customer("33333333333", "Ayşe Demir", "5551112233");
+
+        otel.MusteriEkle(musteri10);
+        otel.MusteriEkle(musteri11);
+        otel.MusteriEkle(musteri12);
+
+        System.out.println("Rezervasyon Testleri\n");
+
+        // TEST 1: Ahmet için normal bir rezervasyon (Oda boş, kabul edilmeli)
+        // Tarih: 10 Mayıs 2026 - 15 Mayıs 2026
+        System.out.println("TEST 1: Ahmet (10-15 Mayıs) rezervasyon denemesi...");
+        otel.RezervasyonYap("11111111111", "101", LocalDate.of(2026, 5, 10), LocalDate.of(2026, 5, 15));
+
+        // TEST 2: Mehmet için Ahmet'ten sonraki bir tarih (Çakışma yok, kabul edilmeli)
+        // Tarih: 16 Mayıs 2026 - 20 Mayıs 2026
+        System.out.println("\nTEST 2: Mehmet (16-20 Mayıs) rezervasyon denemesi...");
+        otel.RezervasyonYap("22222222222", "101", LocalDate.of(2026, 5, 16), LocalDate.of(2026, 5, 20));
+
+        // TEST 3: Ayşe için ÇAKIŞAN bir tarih (Reddedilmeli!)
+        // Tarih: 14 Mayıs 2026 - 18 Mayıs 2026 (Ahmet çıkmadan giriyor, Mehmet girmeden
+        // çıkıyor)
+        System.out.println("\nTEST 3: Ayşe (14-18 Mayıs) rezervasyon denemesi...");
+        otel.RezervasyonYap("33333333333", "101", LocalDate.of(2026, 5, 14), LocalDate.of(2026, 5, 18));
+
+        // TEST 4: Ayşe için temiz bir tarih (En geç çıkıştan sonra, kabul edilmeli)
+        // Tarih: 22 Mayıs 2026 - 25 Mayıs 2026
+        System.out.println("\nTEST 4: Ayşe (22-25 Mayıs) yeni rezervasyon denemesi...");
+        otel.RezervasyonYap("33333333333", "101", LocalDate.of(2026, 5, 22), LocalDate.of(2026, 5, 25));
+    }
+
+}
