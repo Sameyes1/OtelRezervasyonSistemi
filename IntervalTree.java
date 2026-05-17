@@ -72,4 +72,70 @@ public class IntervalTree {
         // Değilse sağa bak
         return checkOverlap(node.right, start, end);
     }
+
+    // 3. REZERVASYON İPTALİ (SİLME)
+    public void delete(Reservation res) {
+        root = deleteRecursive(root, res);
+    }
+
+    private IntervalTreeNode deleteRecursive(IntervalTreeNode node, Reservation res) {
+        // Ağaç boşsa veya düğüm bulunamadıysa
+        if (node == null) return null;
+
+        // Silinecek düğümü başlangıç tarihine göre ara
+        if (res.getBaslangicTarihi().isBefore(node.reservation.getBaslangicTarihi())) {
+            node.left = deleteRecursive(node.left, res);
+        } else if (res.getBaslangicTarihi().isAfter(node.reservation.getBaslangicTarihi())) {
+            node.right = deleteRecursive(node.right, res);
+        } else {
+            // Başlangıç tarihleri eşleşti. Doğru rezervasyon mu diye bitiş tarihlerini de kontrol edelim.
+            if (node.reservation.getBitisTarihi().equals(res.getBitisTarihi())) {
+                
+                // Durum 1 & 2: Düğümün hiç çocuğu yok veya tek çocuğu var
+                if (node.left == null) return node.right;
+                else if (node.right == null) return node.left;
+
+                // Durum 3: Düğümün iki çocuğu var. 
+                // Sağ alt ağaçtaki en küçük başlangıç tarihli düğümü (inorder successor) bul
+                IntervalTreeNode temp = minNode(node.right);
+                
+                // O düğümün bilgilerini mevcut düğüme kopyala
+                node.reservation = temp.reservation;
+                
+                // Kopyaladığımız o küçük düğümü orijinal yerinden sil
+                node.right = deleteRecursive(node.right, temp.reservation);
+            } else {
+                // Başlangıç tarihi aynı ama farklı bir rezervasyonsa sağdan aramaya devam et
+                node.right = deleteRecursive(node.right, res);
+            }
+        }
+
+        // EN ZOR KISIM: Düğüm silindikten sonra veya alt dallar değiştikçe maxCikis değerini GÜNCELLE
+        if (node != null) {
+            updateMax(node);
+        }
+
+        return node;
+    }
+
+    // Sağ alt ağaçtaki en küçük düğümü bulan yardımcı metod
+    private IntervalTreeNode minNode(IntervalTreeNode node) {
+        IntervalTreeNode current = node;
+        while (current.left != null) {
+            current = current.left;
+        }
+        return current;
+    }
+
+    // Düğümün maxCikis değerini alt çocuklarına bakarak güncelleyen yardımcı metod
+    private void updateMax(IntervalTreeNode node) {
+        node.maxCikis = node.reservation.getBitisTarihi(); // Önce kendi bitiş tarihini varsay
+        
+        if (node.left != null && node.left.maxCikis.isAfter(node.maxCikis)) {
+            node.maxCikis = node.left.maxCikis;
+        }
+        if (node.right != null && node.right.maxCikis.isAfter(node.maxCikis)) {
+            node.maxCikis = node.right.maxCikis;
+        }
+    }
 }

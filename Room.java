@@ -34,4 +34,8 @@ public class Room {
     public IntervalTree getTakvim() {
         return takvim;
     }
+
+    public int getUcret() {
+        return this.Ucret;
+    }
 }

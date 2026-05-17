@@ -17,4 +17,14 @@ public class Customer {
     public String getMusteriTC() {
         return this.MusteriTC;
     }
+    
+    private int rezervasyonSayisi = 0; // VIP durumu için takip değişkeni
+
+    public int getRezervasyonSayisi() {
+        return this.rezervasyonSayisi;
+    }
+
+    public void rezervasyonSayisiniArttir() {
+        this.rezervasyonSayisi++;
+    }
 }
