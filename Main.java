@@ -50,6 +50,27 @@ public class Main {
         // Tarih: 22 Mayıs 2026 - 25 Mayıs 2026
         System.out.println("\nTEST 4: Ayşe (22-25 Mayıs) yeni rezervasyon denemesi...");
         otel.RezervasyonYap("33333333333", "101", LocalDate.of(2026, 5, 22), LocalDate.of(2026, 5, 25));
+
+        // TEST 5: Ahmet için peş peşe rezervasyonlar ve VIP/Fatura kontrolü (3'ten fazla rezervasyon)
+        System.out.println("\nTEST 5: Ahmet için peş peşe rezervasyonlar ve VIP testleri...");
+        otel.RezervasyonYap("11111111111", "101", LocalDate.of(2026, 6, 1), LocalDate.of(2026, 6, 5));
+        otel.RezervasyonYap("11111111111", "101", LocalDate.of(2026, 6, 10), LocalDate.of(2026, 6, 12));
+        
+        System.out.println("Ahmet'in 4. rezervasyonu (VIP indirimi tetiklenmeli):");
+        otel.RezervasyonYap("11111111111", "101", LocalDate.of(2026, 6, 15), LocalDate.of(2026, 6, 20));
+
+        // Ahmet'in son rezervasyonunun faturasını hesaplama
+        Reservation ahmetSonRezervasyon = new Reservation(musteri10, oda101, LocalDate.of(2026, 6, 15), LocalDate.of(2026, 6, 20));
+        otel.faturaHesapla(ahmetSonRezervasyon); 
+
+        // TEST 6: Ayşe'nin (22-25 Mayıs) rezervasyonunu iptal etme (Interval Tree silme)
+        System.out.println("\nTEST 6: Ayşe'nin (22-25 Mayıs) rezervasyonu iptal ediliyor...");
+        Reservation iptalEdilecekRes = new Reservation(musteri12, oda101, LocalDate.of(2026, 5, 22), LocalDate.of(2026, 5, 25));
+        oda101.getTakvim().delete(iptalEdilecekRes);
+
+        // TEST 7: Silinen tarihe (22-25 Mayıs) Mehmet'in rezervasyon denemesi (Kabul edilmeli)
+        System.out.println("\nTEST 7: Silinen tarihe Mehmet (22-25 Mayıs) yeni rezervasyon denemesi...");
+        otel.RezervasyonYap("22222222222", "101", LocalDate.of(2026, 5, 22), LocalDate.of(2026, 5, 25));
     }
 
 }
