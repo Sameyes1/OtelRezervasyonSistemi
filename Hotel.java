@@ -1,6 +1,7 @@
 import java.util.HashMap;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.time.temporal.ChronoUnit;
 
 public class Hotel {
     private HashMap<String, Customer> Musteriler; // tc girildiginde musterinin butun bilgilerini alicagiz
@@ -42,8 +43,33 @@ public class Hotel {
             //Eğer false  dönerse: Rezervasyonu oluştur ve takvime ekle
             Reservation yeniRezervasyon = new Reservation(musteri, oda, BaslangicTarihi, BitisTarihi);
             oda.getTakvim().insert(yeniRezervasyon);
+            musteri.rezervasyonSayisiniArttir(); // VIP sistemi için sayacı artır
             System.out.println("Başarılı: " + musteri.getTamAd() + " için " + oda.getOdaNo() + " numaralı odaya rezervasyon yapıldı!");
         }
+    }
+    // Fatura Hesaplama ve VIP İndirim Mantığı
+    public double faturaHesapla(Reservation res) {
+        // Kalınan gün sayısını hesapla
+        long gunSayisi = ChronoUnit.DAYS.between(res.getBaslangicTarihi(), res.getBitisTarihi());
+        
+        // Temel tutarı oda ücreti ile çarp
+        double toplamTutar = gunSayisi * res.getOda().getUcret();
+        Customer musteri = res.getCustomer();
+
+        System.out.println("Fatura Detayı: " + musteri.getTamAd() + " | Oda: " + res.getOda().getOdaNo());
+        System.out.println("Kalınacak Gün: " + gunSayisi + " gün | Gecelik Ücret: " + res.getOda().getUcret() + " TL");
+        System.out.println("İndirimsiz Toplam Tutar: " + toplamTutar + " TL");
+
+        // VIP İndirim Sistemi (3'ten fazla rezervasyon kontrolü)
+        if (musteri.getRezervasyonSayisi() > 3) {
+            double indirimMiktari = toplamTutar * 0.10; // %10 İndirim
+            toplamTutar = toplamTutar - indirimMiktari;
+            System.out.println("Tebrikler! 3'ten fazla rezervasyon yaptığınız için %10 VIP indirimi kazandınız.");
+            System.out.println("İndirim Tutarı: -" + indirimMiktari + " TL");
+        }
+
+        System.out.println("Ödenecek Net Tutar: " + toplamTutar + " TL\n");
+        return toplamTutar;
     }
 
     
